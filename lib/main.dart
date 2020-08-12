@@ -74,19 +74,29 @@ class _HomePageState extends State<HomePage> {
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: Observer(builder: (_) {
-        return AnimatedContainer(
-          height: 60,
-          duration: Duration(milliseconds: 200),
-          decoration: BoxDecoration(
-            color: controller.selectedOptions.length < 3 ? Colors.grey : Colors.orange,
-            borderRadius: BorderRadius.circular(10),
+        int listLength = controller.selectedOptions.length;
+        return GestureDetector(
+          onTap: listLength >= 3 ? (){ print('save');} : null,
+          child: AnimatedContainer(
+            height: 60,
+            duration: Duration(milliseconds: 200),
+            decoration: BoxDecoration(
+              color: listLength < 3
+                  ? Colors.grey
+                  : Colors.orange,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Center(
+                child: Text(
+              listLength < 3
+                  ? '$listLength Selected'
+                  : 'Save',
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600),
+            )),
           ),
-          child: Center(
-              child: Text(
-            controller.selectedOptions.length < 3 ? '${controller.selectedOptions.length} Selected' : 'Save',
-            style: TextStyle(
-                color: Colors.white, fontSize: 20, fontWeight: FontWeight.w600),
-          )),
         );
       }),
     );
