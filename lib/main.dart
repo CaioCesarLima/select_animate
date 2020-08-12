@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:get_it/get_it.dart';
 
-void main() => runApp(MyApp());
+import 'home_controller.dart';
+
+void main() {
+  GetIt getIt = GetIt.I;
+  getIt.registerSingleton<HomeController>(HomeController());
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   @override
@@ -49,28 +57,39 @@ class _HomePageState extends State<HomePage> {
           _boxSearch(),
           Padding(
             padding: const EdgeInsets.only(top: 10, left: 20),
-            child: Text('minimum 3 tag to continue', style: TextStyle(color: Colors.grey[500]),),
-          )
+            child: Text(
+              'minimum 3 tag to continue',
+              style: TextStyle(color: Colors.grey[500]),
+            ),
+          ),
+          _selectedsOptionsList(),
+          _optionsList(),
         ],
       ),
     );
   }
 
   Widget _floatActionButton() {
+    final controller = GetIt.I.get<HomeController>();
+    int listLength = controller.selectedOptions.length;
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: AnimatedContainer(
         height: 60,
         duration: Duration(milliseconds: 200),
         decoration: BoxDecoration(
-            color: Colors.orange, borderRadius: BorderRadius.circular(10)),
-        child: Center(
-          child: Text(
-            'Save',
-            style: TextStyle(
-                color: Colors.white, fontSize: 20, fontWeight: FontWeight.w600),
-          ),
+          color: listLength<3 ? Colors.grey : Colors.orange,
+          borderRadius: BorderRadius.circular(10),
         ),
+        child: Center(
+            child: Observer(
+                builder: (BuildContext context) => Text(
+                      listLength < 3 ? '$listLength Selected' : 'Save',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600),
+                    ))),
       ),
     );
   }
@@ -118,6 +137,94 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _selectedsOptionsList() {
+    final controller = GetIt.I.get<HomeController>();
+    return Padding(
+      padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
+      child: Observer(builder: (_) {
+        return Wrap(
+          spacing: 10,
+          runSpacing: 10,
+          children: <Widget>[
+            ...controller.selectedOptions.map((option) {
+              return GestureDetector(
+                onTap: () {
+                  option.selectOption();
+                  print(option.selected);
+                },
+                child: Container(
+                  padding: EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                      color: option.selected ? Colors.grey[500] : Colors.orange,
+                      borderRadius: BorderRadius.circular(20)),
+                  child: Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: <Widget>[
+                        Text(
+                          option.optionName,
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        Icon(
+                          Icons.add,
+                          color: Colors.white,
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }).toList()
+          ],
+        );
+      }),
+    );
+  }
+
+  Widget _optionsList() {
+    final controller = GetIt.I.get<HomeController>();
+    return Padding(
+      padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
+      child: Observer(builder: (_) {
+        return Wrap(
+          spacing: 10,
+          runSpacing: 10,
+          children: <Widget>[
+            ...controller.optionList.map((option) {
+              return GestureDetector(
+                onTap: () {
+                  option.selectOption();
+                  print(option.selected);
+                },
+                child: Container(
+                  padding: EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                      color: option.selected ? Colors.grey[500] : Colors.blue,
+                      borderRadius: BorderRadius.circular(20)),
+                  child: Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: <Widget>[
+                        Text(
+                          option.optionName,
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        Icon(
+                          Icons.add,
+                          color: Colors.white,
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }).toList()
+          ],
+        );
+      }),
     );
   }
 }
