@@ -71,26 +71,24 @@ class _HomePageState extends State<HomePage> {
 
   Widget _floatActionButton() {
     final controller = GetIt.I.get<HomeController>();
-    int listLength = controller.selectedOptions.length;
     return Padding(
       padding: const EdgeInsets.all(20.0),
-      child: AnimatedContainer(
-        height: 60,
-        duration: Duration(milliseconds: 200),
-        decoration: BoxDecoration(
-          color: listLength<3 ? Colors.grey : Colors.orange,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Center(
-            child: Observer(
-                builder: (BuildContext context) => Text(
-                      listLength < 3 ? '$listLength Selected' : 'Save',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.w600),
-                    ))),
-      ),
+      child: Observer(builder: (_) {
+        return AnimatedContainer(
+          height: 60,
+          duration: Duration(milliseconds: 200),
+          decoration: BoxDecoration(
+            color: controller.selectedOptions.length < 3 ? Colors.grey : Colors.orange,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Center(
+              child: Text(
+            controller.selectedOptions.length < 3 ? '${controller.selectedOptions.length} Selected' : 'Save',
+            style: TextStyle(
+                color: Colors.white, fontSize: 20, fontWeight: FontWeight.w600),
+          )),
+        );
+      }),
     );
   }
 
@@ -143,7 +141,7 @@ class _HomePageState extends State<HomePage> {
   Widget _selectedsOptionsList() {
     final controller = GetIt.I.get<HomeController>();
     return Padding(
-      padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
+      padding: const EdgeInsets.only(top: 10, left: 20, right: 20, bottom: 20),
       child: Observer(builder: (_) {
         return Wrap(
           spacing: 10,
@@ -155,11 +153,12 @@ class _HomePageState extends State<HomePage> {
                   option.selectOption();
                   print(option.selected);
                 },
-                child: Container(
+                child: AnimatedContainer(
                   padding: EdgeInsets.all(8),
                   decoration: BoxDecoration(
                       color: option.selected ? Colors.grey[500] : Colors.orange,
                       borderRadius: BorderRadius.circular(20)),
+                  duration: Duration(milliseconds: 300),
                   child: Center(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -186,45 +185,53 @@ class _HomePageState extends State<HomePage> {
 
   Widget _optionsList() {
     final controller = GetIt.I.get<HomeController>();
-    return Padding(
-      padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
-      child: Observer(builder: (_) {
-        return Wrap(
-          spacing: 10,
-          runSpacing: 10,
-          children: <Widget>[
-            ...controller.optionList.map((option) {
-              return GestureDetector(
-                onTap: () {
-                  option.selectOption();
-                  print(option.selected);
-                },
-                child: Container(
-                  padding: EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                      color: option.selected ? Colors.grey[500] : Colors.blue,
-                      borderRadius: BorderRadius.circular(20)),
-                  child: Center(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: <Widget>[
-                        Text(
-                          option.optionName,
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        Icon(
-                          Icons.add,
-                          color: Colors.white,
-                        )
-                      ],
+    return Observer(builder: (_) {
+      return Container(
+        color: Colors.grey[300],
+        child: Padding(
+          padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
+          child: Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            children: <Widget>[
+              ...controller.optionList.map((option) {
+                return GestureDetector(
+                  onTap: () {
+                    option.selectOption();
+                    print(option.selected);
+                  },
+                  child: AnimatedContainer(
+                    padding: EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                        color: option.selected ? Colors.grey[500] : Colors.blue,
+                        borderRadius: BorderRadius.circular(20)),
+                    duration: Duration(milliseconds: 300),
+                    child: Center(
+                      child: Column(
+                        children: <Widget>[
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: <Widget>[
+                              Text(
+                                option.optionName,
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              Icon(
+                                Icons.add,
+                                color: Colors.white,
+                              )
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              );
-            }).toList()
-          ],
-        );
-      }),
-    );
+                );
+              }).toList()
+            ],
+          ),
+        ),
+      );
+    });
   }
 }
